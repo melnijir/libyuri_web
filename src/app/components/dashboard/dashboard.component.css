@@ -1,0 +1,8 @@
+.content {
+    display: flex;
+    flex-flow: row;
+}
+
+app-classes-list {
+    max-width: 400px;
+}

@@ -1,0 +1,6 @@
+.graph_area {
+    background-color: gainsboro;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+}

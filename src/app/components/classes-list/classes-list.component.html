@@ -1,0 +1,17 @@
+<mat-accordion class="example-headers-align">
+    <mat-expansion-panel cdkDrag *ngFor="let class of classes">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{class.name}}
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <p>{{class.description}}</p>
+        <mat-list>
+            <mat-list-item lines="3" *ngFor="let param of class.params">
+                <span matListItemTitle>{{param.name}}</span>
+                <span matListItemLine>Description: {{param.description}}</span>
+                <span matListItemLine>Value: {{param.value}}</span>
+            </mat-list-item>
+        </mat-list>
+    </mat-expansion-panel>
+</mat-accordion>
