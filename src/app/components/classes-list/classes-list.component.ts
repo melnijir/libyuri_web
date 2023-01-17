@@ -9,7 +9,7 @@ import { YuriService } from 'src/app/services/yuri.service';
 })
 export class ClassesListComponent implements OnInit {
 
-  classes?: Class[];
+  classes: Class[] = [];
 
   constructor(private yuriService: YuriService) { }
 
