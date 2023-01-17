@@ -1,3 +1,19 @@
-<div class="graph_area" cdkDropList (cdkDropListDropped)="drop($event)">
+<div class="graph_area" cdkDropList id="graph-list" cdkDropListConnectedTo="classes-list" (cdkDropListDropped)="drop($event)">
+
+    <mat-expansion-panel cdkDrag *ngFor="let node of nodes">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{node.name}}
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <p>{{node.class}}</p>
+        <mat-list>
+            <mat-list-item lines="3" *ngFor="let param of node.params">
+                <span matListItemTitle>{{param.name}}</span>
+                <span matListItemLine>Description: {{param.description}}</span>
+                <span matListItemLine>Value: {{param.value}}</span>
+            </mat-list-item>
+        </mat-list>
+    </mat-expansion-panel>
 
 </div>
