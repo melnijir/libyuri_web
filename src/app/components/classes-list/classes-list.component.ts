@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Class } from 'src/app/interfaces/class';
+import { CommService } from 'src/app/services/comm.service';
 import { YuriService } from 'src/app/services/yuri.service';
 
 @Component({
@@ -11,7 +12,7 @@ export class ClassesListComponent implements OnInit {
 
   classes: Class[] = [];
 
-  constructor(private yuriService: YuriService) { }
+  constructor(private yuriService: YuriService, private commService: CommService) { }
 
   ngOnInit(): void {
     this.retrieveClasses();
@@ -25,5 +26,9 @@ export class ClassesListComponent implements OnInit {
         },
         error: (e) => console.error(e)
       });
+  }
+
+  addNewNode(node_class: Class) {
+    this.commService.addNewNode(node_class);
   }
 }

@@ -1,7 +1,9 @@
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
-import { Component } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { GraphicNode } from 'src/app/classes/graphic-node';
 import { Class } from 'src/app/interfaces/class';
 import { Node } from 'src/app/interfaces/node';
+import { CommService } from 'src/app/services/comm.service';
 import { YuriService } from 'src/app/services/yuri.service';
 
 @Component({
@@ -11,51 +13,31 @@ import { YuriService } from 'src/app/services/yuri.service';
 })
 export class GraphComponent {
 
-  nodes: Node[] = [];
-  classes: Class[] = [];
-  inserted: Class[] = [];
+  nodes: GraphicNode[] = [];
 
-  constructor(private yuriService: YuriService) { }
-
-  ngOnInit(): void {
-    this.retrieveClasses();
-  }
-
-  retrieveClasses(): void {
-    this.yuriService.getClasses()
-      .subscribe({
-        next: (data) => {
-          this.classes = data;
-        },
-        error: (e) => console.error(e)
-      });
-  }
-
-  drop(event: CdkDragDrop<Class[]>) {
-    // Stupid implemetation, just to test if it works
-    if (event.previousContainer != event.container) {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex,
-      );
-      if (this.inserted.length > 0) {
-        const added: Class = this.inserted[0];
-        const node: Node = {
-          name: added.name,
-          class: added.name,
-          params: added.params
-        }
+  constructor(private yuriService: YuriService, commService: CommService) {
+    commService.newNode$.subscribe(
+      nodeClass => {
+        let node: GraphicNode = new GraphicNode();
+        node.name = nodeClass.name;
+        node.class = nodeClass.name;
+        node.params = nodeClass.params;
         this.nodes.push(node);
       }
-      transferArrayItem(
-        event.container.data,
-        event.previousContainer.data,
-        event.currentIndex,
-        event.previousIndex,
-      );
-    }
+    )
+  }
+
+  makeNodeActive(active_node: GraphicNode) {
+    this.nodes.forEach(node => {
+      node.active = false;
+    });
+    active_node.active = true;
+  }
+
+  removeNode(remove_node: GraphicNode) {
+    this.nodes = this.nodes.filter(node => {
+      return (node !== remove_node)
+    });
   }
 
 }

@@ -1,9 +1,14 @@
-<mat-accordion id="classes-list" cdkDropList [cdkDropListData]="classes" cdkDropListConnectedTo="graph-list" class="example-headers-align">
-    <mat-expansion-panel cdkDrag *ngFor="let class of classes">
+<mat-accordion class="classes-list">
+    <mat-expansion-panel *ngFor="let class of classes" hideToggle>
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{class.name}}
             </mat-panel-title>
+            <mat-panel-description>
+                <button mat-icon-button (click)="addNewNode(class);$event.stopPropagation()">
+                    <mat-icon>add</mat-icon>
+                </button>
+            </mat-panel-description>
         </mat-expansion-panel-header>
         <p>{{class.description}}</p>
         <mat-list>
