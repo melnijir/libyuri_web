@@ -56,11 +56,15 @@ export class GraphComponent implements OnChanges {
     });
   }
 
-  addPipe(node: GraphicNode, targetNode: GraphicNode) {
+  existingPipe(node: GraphicNode, targetNode: GraphicNode): boolean {
     let alreadyExisting = this.pipes.filter(pipe => {
       return (pipe.from == node && pipe.to == targetNode)
     });
-    if (!alreadyExisting.length) {
+    return (alreadyExisting.length != 0)
+  }
+
+  addPipe(node: GraphicNode, targetNode: GraphicNode) {
+    if (!this.existingPipe(node, targetNode)) {
       let pipe: GraphicPipe = new GraphicPipe();
       this.nodesElements?.forEach(searchNode => {
         if (searchNode.nativeElement.id == "node-"+node.name) {

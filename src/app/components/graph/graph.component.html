@@ -19,7 +19,7 @@
             </mat-menu>
             <mat-menu #pipe0="matMenu">
                 <button mat-menu-item *ngFor="let target_node of nodes | filterNodesExclude: node" (click)="addPipe(node, target_node)">
-                    <mat-icon>check_box_outline_blank</mat-icon>
+                    <mat-icon>{{existingPipe(node, target_node) ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
                     <span>{{target_node.name}}</span>
                 </button>
                 <button mat-menu-item *ngIf="!(nodes | filterNodesExclude: node).length" disabled>
