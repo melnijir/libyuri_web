@@ -11,6 +11,8 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ClassesListComponent } from './components/classes-list/classes-list.component';
 import { GraphComponent } from './components/graph/graph.component';
 
+import { FilterNodesExcludePipe } from './pipes/filter-nodes-exclude.pipe';
+
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { MatIconModule } from '@angular/material/icon';
@@ -20,6 +22,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
   declarations: [
@@ -27,7 +30,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     NodesListComponent,
     DashboardComponent,
     ClassesListComponent,
-    GraphComponent
+    GraphComponent,
+    FilterNodesExcludePipe
   ],
   imports: [
     BrowserModule,
@@ -42,7 +46,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatGridListModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatMenuModule
   ],
   providers: [],
   bootstrap: [AppComponent]

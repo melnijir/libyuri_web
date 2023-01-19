@@ -6,4 +6,5 @@ export class GraphicNode implements Node {
     class: string = "";
     params: Param[] = [];
     active: boolean = false;
+    pipes: number = 0;
 }

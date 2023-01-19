@@ -1,14 +1,37 @@
 <div class="graph-area" id="graph-list">
-    <mat-expansion-panel [ngClass]="node.active ? 'node-on-top' : 'node-on-same'" *ngFor="let node of nodes" cdkDrag cdkDragBoundary=".graph-area" [togglePosition]="'before'" (click)="makeNodeActive(node)">
+    <mat-expansion-panel #nodesElements [id]="'node-'+node.name" [ngClass]="node.active ? 'node-on-top' : 'node-on-same'" *ngFor="let node of nodes" cdkDrag cdkDragBoundary=".graph-area" [togglePosition]="'before'" (click)="makeNodeActive(node)" (cdkDragReleased)="updateLines()" (afterCollapse)="updateLines()" (afterExpand)="updateLines()">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{node.name}}
             </mat-panel-title>
+            <button mat-icon-button [matMenuTriggerFor]="pipesMenu" aria-label="Example icon-button with a menu" (click)="$event.stopPropagation()" (mousedown)="makeNodeActive(node)">
+                <mat-icon>forward</mat-icon>
+            </button>
+            <mat-menu #pipesMenu="matMenu">
+                <button mat-menu-item [matMenuTriggerFor]="pipe0">
+                    <mat-icon>more_vert</mat-icon>
+                    <span>Pipe 0</span>
+                </button>
+                <button mat-menu-item disabled>
+                    <mat-icon>more_vert</mat-icon>
+                    <span>Pipe 1</span>
+                </button>
+            </mat-menu>
+            <mat-menu #pipe0="matMenu">
+                <button mat-menu-item *ngFor="let target_node of nodes | filterNodesExclude: node" (click)="addPipe(node, target_node)">
+                    <mat-icon>check_box_outline_blank</mat-icon>
+                    <span>{{target_node.name}}</span>
+                </button>
+                <button mat-menu-item *ngIf="!(nodes | filterNodesExclude: node).length" disabled>
+                    <mat-icon>check_box_outline_blank</mat-icon>
+                    <span>No availible node</span>
+                </button>
+            </mat-menu>
+
             <div class="node-handle" cdkDragHandle (mousedown)="makeNodeActive(node)" (click)="$event.stopPropagation()">
-                <svg width="24px" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"></path>
-                  <path d="M0 0h24v24H0z" fill="none"></path>
-                </svg>
+                <button mat-icon-button>
+                    <mat-icon>open_with</mat-icon>
+                </button>
             </div>
         </mat-expansion-panel-header>
         <p>Class: {{node.class}}</p>
