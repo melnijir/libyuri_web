@@ -16,7 +16,6 @@ export class GraphComponent implements OnChanges {
   pipes: GraphicPipe[] = [];
 
   line: any;
-  line_style: any = {color: 'black', middleLabel: LeaderLine.captionLabel('single')};
 
   @ViewChildren("nodesElements", {read: ElementRef}) nodesElements?: QueryList<ElementRef>;
 
@@ -41,19 +40,11 @@ export class GraphComponent implements OnChanges {
     activeNode.active = true;
   }
 
-  updateLines() {
-    this.pipes.forEach(pipe => {
-      pipe.line.remove();
-      if (pipe.from_native && pipe.to_native) {
-        pipe.line = new LeaderLine(pipe.from_native, pipe.to_native, this.line_style);
-      }
-    });
-  }
-
   removeNode(removeNode: GraphicNode) {
-    this.nodes = this.nodes.filter(node => {
-      return (node !== removeNode)
-    });
+    let pipesToDelete = this.pipes.filter(pipe => { return (pipe.from === removeNode ) })
+    pipesToDelete.forEach(pipe => { pipe.line.remove(); });
+    this.pipes = this.pipes.filter(pipe => { return (pipe.from !== removeNode ) })
+    this.nodes = this.nodes.filter(node => { return (node !== removeNode) });
   }
 
   existingPipe(node: GraphicNode, targetNode: GraphicNode): boolean {
@@ -61,6 +52,22 @@ export class GraphComponent implements OnChanges {
       return (pipe.from == node && pipe.to == targetNode)
     });
     return (alreadyExisting.length != 0)
+  }
+
+  addLine(pipe: GraphicPipe): any {
+    return new LeaderLine(pipe.from_native, pipe.to_native, {
+      color: 'black',
+      middleLabel: LeaderLine.captionLabel('single')
+    });
+  }
+
+  updateLines() {
+    this.pipes.forEach(pipe => {
+      pipe.line.remove();
+      if (pipe.from_native && pipe.to_native) {
+        pipe.line = this.addLine(pipe);
+      }
+    });
   }
 
   addPipe(node: GraphicNode, targetNode: GraphicNode) {
@@ -78,7 +85,7 @@ export class GraphComponent implements OnChanges {
       });
       if (pipe.from_native && pipe.to_native) {
         pipe.name = node.name+"-to-"+targetNode.name;
-        pipe.line = new LeaderLine(pipe.from_native, pipe.to_native, this.line_style);
+        pipe.line = this.addLine(pipe);
       }
       this.pipes.push(pipe);
     }
