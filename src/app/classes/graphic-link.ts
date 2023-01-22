@@ -1,8 +1,8 @@
 import { Param } from "../interfaces/param";
-import { Pipe } from "../interfaces/pipe";
+import { Link } from "../interfaces/link";
 import { GraphicNode } from "./graphic-node";
 
-export class GraphicPipe implements Pipe{
+export class GraphicLink implements Link {
     name: string = "";
     class: string = "";
     params: Param[] = [];

@@ -1,0 +1,32 @@
+<h1 mat-dialog-title>Link edit</h1>
+<div mat-dialog-content>
+    <p>Class: {{link.class}}</p>
+    <p>
+        <mat-form-field appearance="fill">
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="link.name">
+        </mat-form-field>
+    </p>
+    <p>
+    <mat-form-field appearance="fill">
+        <mat-label>Class</mat-label>
+        <mat-select [(ngModel)]="link.class">
+          <mat-option *ngFor="let pipe of pipes" value="{{pipe.name}}">{{pipe.name}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    </p>
+    <p>
+        <mat-form-field *ngFor="let param of getPipeParams(link.class)">
+            <mat-label>{{param.name}}</mat-label>
+            <input matInput [(ngModel)]="param.value">
+        </mat-form-field>
+    </p>
+    <p>
+        <button mat-mini-fab color="primary" [mat-dialog-close]="link">
+            <mat-icon>add</mat-icon>
+        </button>
+        <button mat-mini-fab color="warn" (click)="removeLink()">
+            <mat-icon>cancel</mat-icon>
+        </button>
+    </p>
+</div>

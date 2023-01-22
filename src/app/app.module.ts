@@ -10,6 +10,7 @@ import { NodesListComponent } from './components/nodes-list/nodes-list.component
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ClassesListComponent } from './components/classes-list/classes-list.component';
 import { GraphComponent } from './components/graph/graph.component';
+import { LinkEditorComponent } from './components/link-editor/link-editor.component';
 
 import { FilterNodesExcludePipe } from './pipes/filter-nodes-exclude.pipe';
 
@@ -23,6 +24,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -31,7 +34,8 @@ import { MatMenuModule } from '@angular/material/menu';
     DashboardComponent,
     ClassesListComponent,
     GraphComponent,
-    FilterNodesExcludePipe
+    FilterNodesExcludePipe,
+    LinkEditorComponent
   ],
   imports: [
     BrowserModule,
@@ -47,7 +51,9 @@ import { MatMenuModule } from '@angular/material/menu';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatMenuModule
+    MatMenuModule,
+    MatDialogModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

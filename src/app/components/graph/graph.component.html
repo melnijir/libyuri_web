@@ -4,28 +4,30 @@
             <mat-panel-title>
                 {{node.name}}
             </mat-panel-title>
-            <button mat-icon-button [matMenuTriggerFor]="pipesMenu" aria-label="Example icon-button with a menu" (click)="$event.stopPropagation()" (mousedown)="makeNodeActive(node)">
+            <button mat-icon-button [matMenuTriggerFor]="linksMenu" aria-label="Example icon-button with a menu" (click)="$event.stopPropagation()" (mousedown)="makeNodeActive(node)">
                 <mat-icon>forward</mat-icon>
             </button>
-            <mat-menu #pipesMenu="matMenu">
-                <button mat-menu-item [matMenuTriggerFor]="pipe0">
+            <mat-menu #linksMenu="matMenu">
+                <button mat-menu-item [matMenuTriggerFor]="subLinksMenu" [matMenuTriggerData]="{link: link.to?.name}" *ngFor="let link of node.links">
                     <mat-icon>more_vert</mat-icon>
-                    <span>Pipe 0</span>
+                    <span>Link to {{link.to?.name}}</span>
                 </button>
-                <button mat-menu-item disabled>
+                <button mat-menu-item [matMenuTriggerFor]="subLinksMenu">
                     <mat-icon>more_vert</mat-icon>
-                    <span>Pipe 1</span>
+                    <span>New link</span>
                 </button>
             </mat-menu>
-            <mat-menu #pipe0="matMenu">
-                <button mat-menu-item *ngFor="let target_node of nodes | filterNodesExclude: node" (click)="addPipe(node, target_node)">
-                    <mat-icon>{{existingPipe(node, target_node) ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
-                    <span>{{target_node.name}}</span>
-                </button>
-                <button mat-menu-item *ngIf="!(nodes | filterNodesExclude: node).length" disabled>
-                    <mat-icon>check_box_outline_blank</mat-icon>
-                    <span>No availible node</span>
-                </button>
+            <mat-menu #subLinksMenu="matMenu">
+                <ng-template matMenuContent let-link="link">
+                    <button mat-menu-item *ngFor="let target_node of nodes | filterNodesExclude: node" (click)="addLink(node, target_node)">
+                        <mat-icon>{{(link == target_node.name) ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
+                        <span>{{target_node.name}}</span>
+                    </button>
+                    <button mat-menu-item *ngIf="!(nodes | filterNodesExclude: node).length" disabled>
+                        <mat-icon>check_box_outline_blank</mat-icon>
+                        <span>No availible node</span>
+                    </button>
+                </ng-template>
             </mat-menu>
 
             <div class="node-handle" cdkDragHandle (mousedown)="makeNodeActive(node)" (click)="$event.stopPropagation()">

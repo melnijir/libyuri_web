@@ -1,7 +1,9 @@
 import { Component, ElementRef, OnChanges, QueryList, ViewChildren } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { GraphicNode } from 'src/app/classes/graphic-node';
-import { GraphicPipe } from 'src/app/classes/graphic-pipe';
+import { GraphicLink } from 'src/app/classes/graphic-link';
 import { CommService } from 'src/app/services/comm.service';
+import { LinkEditorComponent } from '../link-editor/link-editor.component';
 
 declare var LeaderLine: any;
 
@@ -13,13 +15,12 @@ declare var LeaderLine: any;
 export class GraphComponent implements OnChanges {
 
   nodes: GraphicNode[] = [];
-  pipes: GraphicPipe[] = [];
 
   line: any;
 
   @ViewChildren("nodesElements", {read: ElementRef}) nodesElements?: QueryList<ElementRef>;
 
-  constructor(commService: CommService) {
+  constructor(private commService: CommService, public linkEditor: MatDialog) {
     commService.newNode$.subscribe(
       nodeClass => {
         let node: GraphicNode = new GraphicNode();
@@ -41,62 +42,81 @@ export class GraphComponent implements OnChanges {
   }
 
   removeNode(removeNode: GraphicNode) {
-    let pipesToDelete = this.pipes.filter(pipe => { return (pipe.from === removeNode ) })
-    pipesToDelete.forEach(pipe => { pipe.line.remove(); });
-    this.pipes = this.pipes.filter(pipe => { return (pipe.from !== removeNode ) })
+    removeNode.links.forEach(link => { link.line.remove(); });
     this.nodes = this.nodes.filter(node => { return (node !== removeNode) });
   }
 
-  existingPipe(node: GraphicNode, targetNode: GraphicNode): boolean {
-    let alreadyExisting = this.pipes.filter(pipe => {
-      return (pipe.from == node && pipe.to == targetNode)
+  getExistingLink(node: GraphicNode, targetNode: GraphicNode): GraphicLink|undefined {
+    let alreadyExisting = node.links.filter(link => {
+      return (link.to == targetNode)
     });
-    return (alreadyExisting.length != 0)
+    if (alreadyExisting.length != 0)
+      return alreadyExisting[0];
+    return undefined;
   }
 
-  addLine(pipe: GraphicPipe): any {
-    return new LeaderLine(pipe.from_native, pipe.to_native, {
+  addLine(link: GraphicLink): any {
+    return new LeaderLine(link.from_native, link.to_native, {
       color: 'black',
-      middleLabel: LeaderLine.captionLabel('single')
+      middleLabel: LeaderLine.captionLabel(link.class)
     });
   }
 
   updateLines() {
-    this.pipes.forEach(pipe => {
-      pipe.line.remove();
-      if (pipe.from_native && pipe.to_native) {
-        pipe.line = this.addLine(pipe);
-      }
-    });
+    this.nodes.forEach(node => {
+      node.links.forEach(link => {
+        link.line.remove();
+        if (link.from_native && link.to_native) {
+          link.line = this.addLine(link);
+        }
+      })
+    })
   }
 
-  addPipe(node: GraphicNode, targetNode: GraphicNode) {
-    if (!this.existingPipe(node, targetNode)) {
-      let pipe: GraphicPipe = new GraphicPipe();
+  addLink(node: GraphicNode, targetNode: GraphicNode) {
+    let existingLink = this.getExistingLink(node, targetNode);
+    if (!existingLink) {
+      let link = new GraphicLink();
       this.nodesElements?.forEach(searchNode => {
         if (searchNode.nativeElement.id == "node-"+node.name) {
-          pipe.from = node;
-          pipe.from_native = searchNode.nativeElement;
+          link.from = node;
+          link.from_native = searchNode.nativeElement;
         }
         if (searchNode.nativeElement.id == "node-"+targetNode.name) {
-          pipe.to = targetNode;
-          pipe.to_native = searchNode.nativeElement;
+          link.to = targetNode;
+          link.to_native = searchNode.nativeElement;
         }
       });
-      if (pipe.from_native && pipe.to_native) {
-        pipe.name = node.name+"-to-"+targetNode.name;
-        pipe.line = this.addLine(pipe);
-      }
-      this.pipes.push(pipe);
+      link.name = node.name+"-to-"+targetNode.name;
+      const linkEditorRef = this.linkEditor.open(LinkEditorComponent, {
+        data: link,
+      });
+      linkEditorRef.afterClosed().subscribe(link => {
+        if (link) {
+          link.line = this.addLine(link);
+          link.from.links.push(link);
+        }
+      });
+    } else {
+      const linkEditorRef = this.linkEditor.open(LinkEditorComponent, {
+        data: existingLink,
+      });
+      linkEditorRef.afterClosed().subscribe(link => {
+        if (link) {
+          existingLink = link;
+          this.updateLines();
+        } else {
+          if (existingLink)
+            this.removeLink(existingLink);
+        }
+      });
     }
   }
 
-  // onMakeLine(event: CdkDragEnd): void {
-  //   console.log(event);
-  //   if (true) {
-  //       event.source._dragRef.reset();
-  //   }
-  // }
-
+  removeLink(removeLink: GraphicLink) {
+    removeLink.line.remove();
+    if (removeLink.from)
+      removeLink.from.links = removeLink.from.links.filter(link => { return (link !== removeLink ) });
+  }
 
 }

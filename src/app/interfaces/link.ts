@@ -1,7 +1,7 @@
 import { Param } from "./param";
 
-export interface Pipe {
+export interface Link {
     name: string;
-    description: string;
+    class: string;
     params: Param[];
 }
