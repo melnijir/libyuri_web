@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Link edit</h1>
+<h1 mat-dialog-title>{{newLink ? 'New link' : 'Editting link'}}</h1>
 <div mat-dialog-content>
     <p>Class: {{link.class}}</p>
     <p>
@@ -16,6 +16,14 @@
     </mat-form-field>
     </p>
     <p>
+        <mat-form-field appearance="fill">
+            <mat-label>Input</mat-label>
+            <mat-select [(ngModel)]="link.to_index">
+              <mat-option *ngFor="let input of inputsCnt" [value]=input>input {{input}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        </p>
+    <p>
         <mat-form-field *ngFor="let param of getPipeParams(link.class)">
             <mat-label>{{param.name}}</mat-label>
             <input matInput [(ngModel)]="param.value">
@@ -23,10 +31,10 @@
     </p>
     <p>
         <button mat-mini-fab color="primary" [mat-dialog-close]="link">
-            <mat-icon>add</mat-icon>
+            <mat-icon>{{newLink ? 'add' : 'check'}}</mat-icon>
         </button>
         <button mat-mini-fab color="warn" (click)="removeLink()">
-            <mat-icon>cancel</mat-icon>
+            <mat-icon>{{newLink ? 'cancel' : 'delete'}}</mat-icon>
         </button>
     </p>
 </div>

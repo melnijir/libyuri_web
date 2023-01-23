@@ -7,5 +7,6 @@ export class GraphicNode implements Node {
     class: string = "";
     params: Param[] = [];
     active: boolean = false;
-    links: GraphicLink[] = [];
+    linksIn: GraphicLink[] = [];
+    linksOut: GraphicLink[] = [];
 }

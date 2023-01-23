@@ -8,7 +8,7 @@
                 <mat-icon>forward</mat-icon>
             </button>
             <mat-menu #linksMenu="matMenu">
-                <button mat-menu-item [matMenuTriggerFor]="subLinksMenu" [matMenuTriggerData]="{link: link.to?.name}" *ngFor="let link of node.links">
+                <button mat-menu-item [matMenuTriggerFor]="subLinksMenu" [matMenuTriggerData]="{linkTo: link.to?.name, linkName: link.name}" *ngFor="let link of node.linksOut">
                     <mat-icon>more_vert</mat-icon>
                     <span>Link to {{link.to?.name}}</span>
                 </button>
@@ -18,10 +18,10 @@
                 </button>
             </mat-menu>
             <mat-menu #subLinksMenu="matMenu">
-                <ng-template matMenuContent let-link="link">
-                    <button mat-menu-item *ngFor="let target_node of nodes | filterNodesExclude: node" (click)="addLink(node, target_node)">
-                        <mat-icon>{{(link == target_node.name) ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
-                        <span>{{target_node.name}}</span>
+                <ng-template matMenuContent let-linkTo="linkTo" let-linkName="linkName">
+                    <button mat-menu-item *ngFor="let targetNode of nodes | filterNodesExclude: node" (click)="addLink(node, targetNode, linkName)">
+                        <mat-icon>{{(linkTo == targetNode.name) ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
+                        <span>{{targetNode.name}}</span>
                     </button>
                     <button mat-menu-item *ngIf="!(nodes | filterNodesExclude: node).length" disabled>
                         <mat-icon>check_box_outline_blank</mat-icon>

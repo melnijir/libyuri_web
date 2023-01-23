@@ -13,8 +13,22 @@ import { YuriService } from 'src/app/services/yuri.service';
 export class LinkEditorComponent implements OnInit {
 
   pipes: Pipe[] = [];
+  newLink: boolean = false;
+  inputsCnt: number[];
 
-  constructor(public dialogRef: MatDialogRef<LinkEditorComponent>, @Inject(MAT_DIALOG_DATA) public link: GraphicLink, private yuriService: YuriService) { }
+  constructor(public dialogRef: MatDialogRef<LinkEditorComponent>, @Inject(MAT_DIALOG_DATA) public link: GraphicLink, private yuriService: YuriService) {
+    // Get current inputs for the target node
+    let count: number = 0;
+    if (link.to)
+      count = link.to.linksIn.length;
+    this.inputsCnt = Array(count+1).fill(0).map((x,i)=>i);
+    // It we are inserting new link, set default values
+    if (link.fresh) {
+      this.newLink = true;
+      link.fresh = false;
+      link.to_index = count;
+    }
+  }
 
   ngOnInit(): void {
     this.retrievePipes();
