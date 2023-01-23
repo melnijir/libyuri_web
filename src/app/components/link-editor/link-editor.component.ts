@@ -15,18 +15,23 @@ export class LinkEditorComponent implements OnInit {
   pipes: Pipe[] = [];
   newLink: boolean = false;
   inputsCnt: number[];
+  outputsCnt: number[];
 
   constructor(public dialogRef: MatDialogRef<LinkEditorComponent>, @Inject(MAT_DIALOG_DATA) public link: GraphicLink, private yuriService: YuriService) {
     // Get current inputs for the target node
-    let count: number = 0;
-    if (link.to)
-      count = link.to.linksIn.length;
-    this.inputsCnt = Array(count+1).fill(0).map((x,i)=>i);
+    let countTo: number = 0;
+    if (link.to) countTo = link.to.linksIn.length;
+    this.inputsCnt = Array(countTo+1).fill(0).map((x,i)=>i);
+    // Get current outputs for the source node
+    let countFrom: number = 0;
+    if (link.from) countFrom = link.from.linksOut.length;
+    this.outputsCnt = Array(countFrom+1).fill(0).map((x,i)=>i);
     // It we are inserting new link, set default values
     if (link.fresh) {
       this.newLink = true;
       link.fresh = false;
-      link.to_index = count;
+      link.to_index = countTo;
+      link.from_index = countFrom;
     }
   }
 

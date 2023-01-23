@@ -81,11 +81,9 @@ export class GraphComponent implements OnChanges {
 
   updateLines() {
     this.nodes.forEach(node => {
-      let from_index: number = 0;
       node.linksOut.forEach(link => {
         link.line.remove();
         if (link.from_native && link.to_native) {
-          link.from_index = from_index++;
           link.line = this.addLine(link);
         }
       })
@@ -116,11 +114,9 @@ export class GraphComponent implements OnChanges {
           this.removeLinkByName(node, linkName);
           // Add line and links to the node
           this.links_index++;
-          link.from_index = link.from.linksOut.length;
-          link.to_index = link.to.linksIn.length;
           link.line = this.addLine(link);
-          link.from.linksOut.push(link);
-          link.to.linksIn.push(link);
+          link.from.linksOut.splice(link.from_index, 0, link);
+          link.to.linksIn.splice(link.to_index, 0, link);
         }
       });
     } else {

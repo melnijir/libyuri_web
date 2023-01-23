@@ -17,7 +17,16 @@
     </p>
     <p>
         <mat-form-field appearance="fill">
-            <mat-label>Input</mat-label>
+            <mat-label>Output index</mat-label>
+            <mat-select [(ngModel)]="link.from_index">
+              <mat-option *ngFor="let output of outputsCnt" [value]=output>output {{output}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        </p>
+    <p>
+    <p>
+        <mat-form-field appearance="fill">
+            <mat-label>Input index</mat-label>
             <mat-select [(ngModel)]="link.to_index">
               <mat-option *ngFor="let input of inputsCnt" [value]=input>input {{input}}</mat-option>
             </mat-select>
