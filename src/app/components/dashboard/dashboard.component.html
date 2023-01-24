@@ -1,4 +1,34 @@
-<div class="content">
-    <app-classes-list></app-classes-list>
-    <app-graph></app-graph>
+<div class="page">
+    <mat-toolbar color="primary">
+        <mat-toolbar-row>
+            <span>Yuri WEB</span>
+            <span class="spacer"></span>
+            <button mat-icon-button aria-label="Menu for Yuri actions" [matMenuTriggerFor]="yuriMenu">
+                <mat-icon>menu</mat-icon>
+            </button>
+            <mat-menu #yuriMenu="matMenu">
+                <button mat-menu-item>
+                    <mat-icon>start</mat-icon>
+                    <span>Start</span>
+                </button>
+                <button mat-menu-item>
+                    <mat-icon>stop</mat-icon>
+                    <span>Stop</span>
+                </button>
+                <a mat-menu-item [href]=downloadJsonUrl download="download.json">
+                    <mat-icon>save</mat-icon>
+                    <span>Save</span>
+                </a>
+                <input style="display: none" type="file" (change)="uploadGraph($event.target)" #hiddenfileinput>
+                <button mat-menu-item (click)="hiddenfileinput.click()">
+                    <mat-icon>upload</mat-icon>
+                    <span>Load</span>
+                </button>
+            </mat-menu>
+        </mat-toolbar-row>
+    </mat-toolbar>
+    <div class="content">
+        <app-classes-list></app-classes-list>
+        <app-graph (graphChanged)="updateGraph($event)"></app-graph>
+    </div>
 </div>

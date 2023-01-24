@@ -16,6 +16,7 @@ import { FilterNodesExcludePipe } from './pipes/filter-nodes-exclude.pipe';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
@@ -44,6 +45,7 @@ import { MatSelectModule } from '@angular/material/select';
     BrowserAnimationsModule,
     DragDropModule,
     FormsModule,
+    MatToolbarModule,
     MatExpansionModule,
     MatIconModule,
     MatListModule,

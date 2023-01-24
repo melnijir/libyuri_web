@@ -1,5 +1,5 @@
 <div class="graph-area" id="graph-list">
-    <mat-expansion-panel #nodesElements [id]="'node-'+node.name" [ngClass]="node.active ? 'node-on-top' : 'node-on-same'" *ngFor="let node of nodes" cdkDrag cdkDragBoundary=".graph-area" [togglePosition]="'before'" (click)="makeNodeActive(node)" (cdkDragReleased)="updateLines()" (afterCollapse)="updateLines()" (afterExpand)="updateLines()">
+    <mat-expansion-panel #nodesElements [id]="'node-'+node.name" [ngClass]="node.active ? 'node-on-top' : 'node-on-same'" *ngFor="let node of nodes" cdkDrag cdkDragBoundary=".graph-area" [cdkDragFreeDragPosition]="node.graphPosition" (cdkDragEnded)="saveNodePosition($event, node)" [togglePosition]="'before'" (click)="makeNodeActive(node)" (cdkDragReleased)="updateLines()" (afterCollapse)="updateLines()" (afterExpand)="updateLines()">
         <mat-expansion-panel-header>
             <mat-panel-title>
                 {{node.name}}
@@ -19,7 +19,7 @@
             </mat-menu>
             <mat-menu #subLinksMenu="matMenu">
                 <ng-template matMenuContent let-linkTo="linkTo" let-linkName="linkName">
-                    <button mat-menu-item *ngFor="let targetNode of nodes | filterNodesExclude: node" (click)="addLink(node, targetNode, linkName)">
+                    <button mat-menu-item *ngFor="let targetNode of nodes | filterNodesExclude: node" (click)="addLinkDialog(node, targetNode, linkName)">
                         <mat-icon>{{(linkTo == targetNode.name) ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
                         <span>{{targetNode.name}}</span>
                     </button>

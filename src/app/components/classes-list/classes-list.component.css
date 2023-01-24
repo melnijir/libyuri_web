@@ -1,6 +1,7 @@
 .classes-list .mat-expansion-panel-header-description {
     justify-content: right;
     align-items: center;
+    overflow: auto;
 }
   
 .classes-list .mat-mdc-form-field + .mat-mdc-form-field {
