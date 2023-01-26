@@ -1,7 +1,6 @@
 import { Component, OnChanges, SimpleChanges } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { GraphicNode } from 'src/app/classes/graphic-node';
-import { Class } from 'src/app/interfaces/class';
+import { GraphicGraph } from 'src/app/classes/graphic-graph';
 import { CommService } from 'src/app/services/comm.service';
 
 @Component({
@@ -15,15 +14,7 @@ export class DashboardComponent {
 
   constructor(private sanitizer: DomSanitizer, private commService: CommService) {}
 
-  updateGraph(graph: GraphicNode[]) {
-    graph.forEach(node => {
-      // Prevent circles in JSON
-      node.linksIn = [];
-      node.linksOut.forEach(link => {
-        link.from = undefined;
-        if (link.to) link.to.linksIn = [];
-      });
-    });
+  updateGraph(graph: GraphicGraph) {
     let graphJson = JSON.stringify(graph);
     let uri = this.sanitizer.bypassSecurityTrustUrl("data:text/json;charset=UTF-8," + encodeURIComponent(graphJson));
     this.downloadJsonUrl = uri;

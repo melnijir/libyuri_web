@@ -5,6 +5,7 @@ import { GraphicLink } from 'src/app/classes/graphic-link';
 import { CommService } from 'src/app/services/comm.service';
 import { LinkEditorComponent } from '../link-editor/link-editor.component';
 import { CdkDragEnd } from '@angular/cdk/drag-drop';
+import { GraphicGraph } from 'src/app/classes/graphic-graph';
 
 declare var LeaderLine: any;
 
@@ -15,71 +16,62 @@ declare var LeaderLine: any;
 })
 export class GraphComponent implements AfterViewChecked {
 
-  @Output() graphChanged = new EventEmitter<GraphicNode[]>();
+  @Output() graphChanged = new EventEmitter<GraphicGraph>();
 
-  nodes: GraphicNode[] = [];
-  loadedLinks: GraphicLink[] = [];
-  loadedView: number = 0;
-  nodesIndex: number = 0;
-  linksIndex: number = 0;
+  graph: GraphicGraph = new GraphicGraph();
+
+  recoverLink: boolean = false;
+  recoverView: number = 0;
 
   line: any;
 
   @ViewChildren("nodesElements", {read: ElementRef}) nodesElements?: QueryList<ElementRef>;
 
   constructor(private commService: CommService, public linkEditor: MatDialog) {
-    commService.newNode$.subscribe(
-      nodeClass => {
-        // We got new node from class list
-        let node: GraphicNode = new GraphicNode();
-        node.name = nodeClass.name+"_"+this.nodesIndex.toString();
-        node.class = nodeClass.name;
-        node.params = nodeClass.params;
-        this.nodesIndex++;
-        this.nodes.push(node);
-        this.graphChanged.emit(this.nodes);
+    commService.newNode$.subscribe(nodeClass => {
+      // We got new node from class list
+      let node: GraphicNode = new GraphicNode();
+      node.name = nodeClass.name+"_"+this.graph.nodes.length.toString();
+      node.class = nodeClass.name;
+      node.params = nodeClass.params;
+      this.graph.nodes.push(node);
+      this.graphChanged.emit(this.graph);
+    });
+    commService.newGraph$.subscribe(graph => {
+      // Delete existing nodes in the graph
+      if (this.graph.nodes.length) {
+        this.graph.links.forEach(link => { this.removeLink(link); });
+        this.graph.nodes.forEach(node => { this.removeNode(node); });
       }
-    );
-    commService.newGraph$.subscribe(
-      graph => {
-        // Repair connections deleted in JSON
-        // it's needed to recover the nodes and after checked view also repair the lines
-        this.linksIndex = 0;
-        graph.forEach(node => {
-          node.linksOut.forEach(link => {
-            link.from = node;
-            this.loadedLinks.push(link);
-            this.removeLinkByName(node, link.name);
-          });
-        });
-        this.nodes = graph;
-        this.updateLines();
-      }
-    )
+      // Load a new one
+      this.graph = graph;
+      // Repair links array
+      this.graph.links.forEach(link => {
+        if (link.from && link.to) {
+          link.from = this.getExistingNodeByName(link.from.name);
+          link.to = this.getExistingNodeByName(link.to.name);
+        }
+      });
+      this.recoverLink = true;
+      this.recoverView = 0;
+    });
   }
 
   ngAfterViewChecked(): void {
-    // Repair connections deleted in JSON
-    // now the nodes are rendered, we'll recover the links
-    if (this.loadedLinks.length && this.loadedView++ > 1) {
-      this.loadedLinks.forEach(link => {
-        if (link.to)
-          link.to = this.getExistingNodeByName(link.to.name);
+    // Repair links in graph if we have loaded a new one
+    if (this.recoverLink && this.recoverView++ > 1) {
+      this.graph.links.forEach(link => {
         if (link.from && link.to) {
           this.fillNativeElements(link.from, link.to, link);
           link.line = this.drawLine(link);
-          link.from.linksOut.splice(link.from_index, 0, link);
-          link.to.linksIn.splice(link.to_index, 0, link);
-          this.linksIndex++;
         }
       });
-      this.loadedLinks = [];
-      this.loadedView = 0;
+      this.recoverLink = false;
     }
   }
 
   makeNodeActive(activeNode: GraphicNode) {
-    this.nodes.forEach(node => {
+    this.graph.nodes.forEach(node => {
       node.active = false;
     });
     activeNode.active = true;
@@ -87,33 +79,27 @@ export class GraphComponent implements AfterViewChecked {
 
   saveNodePosition($event: CdkDragEnd, node: GraphicNode) {
     node.graphPosition = $event.source.getFreeDragPosition();
-    this.graphChanged.emit(this.nodes);
-  }
-
-  removeNode(removeNode: GraphicNode) {
-    removeNode.linksOut.forEach(link => {
-      this.removeLink(link);
-    });
-    removeNode.linksIn.forEach(link => {
-      this.removeLink(link);
-    });
-    this.nodes = this.nodes.filter(node => { return (node !== removeNode) });
+    this.graphChanged.emit(this.graph);
   }
 
   getExistingLink(fromNode: GraphicNode, toNode: GraphicNode, linkName: string): GraphicLink|undefined {
-    let alreadyExisting = fromNode.linksOut.filter(link => { return (link.to == toNode && link.name == linkName) });
+    let alreadyExisting = this.graph.links.filter(link => { return (link.from === fromNode && link.to === toNode && link.name === linkName) });
     if (alreadyExisting.length != 0) return alreadyExisting[0];
     return undefined;
   }
 
-  getExistingLinkByName(fromNode: GraphicNode, linkName: string): GraphicLink|undefined {
-    let alreadyExisting = fromNode.linksOut.filter(link => { return (link.name == linkName) });
+  getExistingLinkByName(linkName: string): GraphicLink|undefined {
+    let alreadyExisting = this.graph.links.filter(link => { return (link.name === linkName) });
     if (alreadyExisting.length != 0) return alreadyExisting[0];
     return undefined;
+  }
+
+  getExistingLinksByNode(node: GraphicNode) {
+    return this.graph.links.filter(link => { return (link.from == node) })
   }
 
   getExistingNodeByName(nodeName: string): GraphicNode|undefined {
-    let alreadyExisting = this.nodes.filter(node => { return (node.name == nodeName) });
+    let alreadyExisting = this.graph.nodes.filter(node => { return (node.name === nodeName) });
     if (alreadyExisting.length != 0) return alreadyExisting[0];
     return undefined;
   }
@@ -126,16 +112,19 @@ export class GraphComponent implements AfterViewChecked {
   }
 
   updateLines() {
-    this.nodes.forEach(node => {
-      node.linksOut.forEach(link => {
-        if (typeof link.line.remove === "function")
-          link.line.remove();
-        if (link.from_native && link.to_native) {
-          link.line = this.drawLine(link);
-        }
-      });
+    this.graph.links.forEach(link => {
+      if (typeof link.line.remove === "function") {
+        link.line.remove();
+      } else {
+        console.log("Update tried to redraw not existing link with name: "+link.name);
+      }
+      if (link.from_native && link.to_native) {
+        link.line = this.drawLine(link);
+      } else {
+        console.log("Update tried to link without from/to node set, link name: "+link.name);
+      }
     });
-    this.graphChanged.emit(this.nodes);
+    this.graphChanged.emit(this.graph);
   }
 
   fillNativeElements(fromNode: GraphicNode, toNode: GraphicNode, link: GraphicLink) {
@@ -156,19 +145,17 @@ export class GraphComponent implements AfterViewChecked {
     if (!existingLink) {
       let link: GraphicLink = new GraphicLink();
       this.fillNativeElements(fromNode, toNode, link);
-      link.name = fromNode.name+"_to_"+toNode.name+"_"+this.linksIndex.toString();
+      link.name = fromNode.name+"_to_"+toNode.name+"_"+this.graph.links.length.toString();
       const linkEditorRef = this.linkEditor.open(LinkEditorComponent, {
         data: link,
       });
       linkEditorRef.afterClosed().subscribe(link => {
         if (link) {
           // If it was only switching, remove possible old links
-          this.removeLinkByName(fromNode, linkName);
-          // Add line and links to the node
-          this.linksIndex++;
+          this.removeLinkByName(linkName);
+          // Draw line and add it into graph
           link.line = this.drawLine(link);
-          link.from.linksOut.splice(link.from_index, 0, link);
-          link.to.linksIn.splice(link.to_index, 0, link);
+          this.graph.links.push(link);
         }
       });
     } else {
@@ -188,18 +175,26 @@ export class GraphComponent implements AfterViewChecked {
   }
 
   removeLink(removeLink: GraphicLink) {
-    if (typeof removeLink.line.remove === "function")
+    if (typeof removeLink.line.remove === "function") {
       removeLink.line.remove();
-    if (removeLink.from)
-      removeLink.from.linksOut = removeLink.from.linksOut.filter(link => { return (link !== removeLink ) });
-    if (removeLink.to)
-      removeLink.to.linksIn = removeLink.to.linksIn.filter(link => { return (link !== removeLink ) });
+    } else {
+      console.log("Tried to remove not existing link, name: "+removeLink.name);
+    }
+    this.graph.links = this.graph.links.filter(link => { return (link !== removeLink) });
     this.updateLines();
   }
 
-  removeLinkByName(node: GraphicNode, linkName: string) {
-    let removeLink = this.getExistingLinkByName(node, linkName);
+  removeLinkByName(linkName: string) {
+    let removeLink = this.getExistingLinkByName(linkName);
     if (removeLink) this.removeLink(removeLink);
+  }
+
+  removeNode(removeNode: GraphicNode) {
+    this.graph.links.forEach(link => {
+      if (link.to === removeNode || link.from === removeNode)
+        this.removeLink(link);
+    })
+    this.graph.nodes = this.graph.nodes.filter(node => { return (node !== removeNode) });
   }
 
 }
