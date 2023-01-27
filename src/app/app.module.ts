@@ -27,6 +27,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
+import { LogComponent } from './components/log/log.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { MatSelectModule } from '@angular/material/select';
     ClassesListComponent,
     GraphComponent,
     FilterNodesExcludePipe,
-    LinkEditorComponent
+    LinkEditorComponent,
+    LogComponent
   ],
   imports: [
     BrowserModule,

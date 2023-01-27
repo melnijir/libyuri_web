@@ -1,0 +1,10 @@
+<mat-expansion-panel (opened)="reloadLog()">
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            Log
+          </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-list>
+        <mat-list-item *ngFor="let item of log?.log">{{item}}</mat-list-item>
+    </mat-list>
+</mat-expansion-panel>

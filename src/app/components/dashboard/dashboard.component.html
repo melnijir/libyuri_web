@@ -29,6 +29,9 @@
     </mat-toolbar>
     <div class="content">
         <app-classes-list></app-classes-list>
-        <app-graph (graphChanged)="updateGraph($event)"></app-graph>
+        <div class="graph">
+            <app-log></app-log>
+            <app-graph (graphChanged)="updateGraph($event)"></app-graph>
+        </div>
     </div>
 </div>

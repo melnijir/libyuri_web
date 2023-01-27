@@ -19,9 +19,17 @@ app-classes-list {
     flex: 1;    
 }
 
-app-graph {
+.graph {
     display: flex;
     flex-direction: column;
-    flex-basis: 100%;
-    flex: 1;
+    flex-basis: 80%;
+    flex: 5;
+}
+
+app-graph {
+    min-width: 100%;
+    min-height: 100%;
+}
+
+app-log {
 }

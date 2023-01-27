@@ -5,7 +5,8 @@ import { Class } from '../interfaces/class';
 import { Pipe } from '../interfaces/pipe';
 import { Node } from '../interfaces/node';
 import { Link } from '../interfaces/link';
-import { Info } from '../interfaces/info';
+import { Message } from '../interfaces/message';
+import { Log } from '../interfaces/log';
 
 const yuriLocation = 'http://localhost:8888/';
 
@@ -42,20 +43,24 @@ export class YuriService {
     return this.http.get<Pipe[]>(yuriLocation+"pipes").pipe(catchError(this.handleError));
   }
 
-  addNode(node: Node): Observable<Info> {
-    return this.http.post<Info>(yuriLocation+"node", node, httpOptions).pipe(catchError(this.handleError));
+  getLog(): Observable<Log> {
+    return this.http.get<Log>(yuriLocation+"log").pipe(catchError(this.handleError));
   }
 
-  addLink(link: Link): Observable<Info> {
-    return this.http.post<Info>(yuriLocation+"link", link, httpOptions).pipe(catchError(this.handleError));
+  addNode(node: Node): Observable<Message> {
+    return this.http.post<Message>(yuriLocation+"node", node, httpOptions).pipe(catchError(this.handleError));
   }
 
-  start(): Observable<Info> {
-    return this.http.put<Info>(yuriLocation+"start", {}, httpOptions).pipe(catchError(this.handleError));
+  addLink(link: Link): Observable<Message> {
+    return this.http.post<Message>(yuriLocation+"link", link, httpOptions).pipe(catchError(this.handleError));
   }
 
-  stop(): Observable<Info> {
-    return this.http.put<Info>(yuriLocation+"stop", {}, httpOptions).pipe(catchError(this.handleError));
+  start(): Observable<Message> {
+    return this.http.put<Message>(yuriLocation+"start", {}, httpOptions).pipe(catchError(this.handleError));
+  }
+
+  stop(): Observable<Message> {
+    return this.http.put<Message>(yuriLocation+"stop", {}, httpOptions).pipe(catchError(this.handleError));
   }
 
 
