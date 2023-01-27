@@ -6,6 +6,8 @@ export class GraphicLink implements Link {
     name: string = "";
     class: string = "single";
     params: Param[] = [];
+    src: string = "";
+    dst: string = "";
     from?: GraphicNode;
     to?: GraphicNode;
     from_native?: any;

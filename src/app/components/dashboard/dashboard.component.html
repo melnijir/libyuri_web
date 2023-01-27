@@ -7,11 +7,11 @@
                 <mat-icon>menu</mat-icon>
             </button>
             <mat-menu #yuriMenu="matMenu">
-                <button mat-menu-item>
+                <button mat-menu-item (click)="startGraph()">
                     <mat-icon>start</mat-icon>
                     <span>Start</span>
                 </button>
-                <button mat-menu-item>
+                <button mat-menu-item (click)="stopGraph()">
                     <mat-icon>stop</mat-icon>
                     <span>Stop</span>
                 </button>
