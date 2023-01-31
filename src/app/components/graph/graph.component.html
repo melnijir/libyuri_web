@@ -40,6 +40,8 @@
         <mat-form-field>
             <mat-label>Name</mat-label>
             <input matInput [(ngModel)]="node.name">
+            <mat-hint class="mat-error" *ngIf="!node.name.length">Node name cannot be empty!</mat-hint>
+            <mat-hint class="mat-error" *ngIf="node.name.length && getExistingNodesByName(node.name)?.length != 1">Node with this name exists!</mat-hint>
         </mat-form-field>
         <mat-form-field *ngFor="let param of node.params">
             <mat-label>{{param.name}}</mat-label>

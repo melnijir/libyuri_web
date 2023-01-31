@@ -99,8 +99,13 @@ export class GraphComponent implements AfterViewChecked {
   }
 
   getExistingNodeByName(nodeName: string): GraphicNode|undefined {
+    let nodes = this.getExistingNodesByName(nodeName);
+    return (nodes?.length ? nodes[0] : undefined);
+  }
+
+  getExistingNodesByName(nodeName: string): GraphicNode[]|undefined {
     let alreadyExisting = this.graph.nodes.filter(node => { return (node.name === nodeName) });
-    if (alreadyExisting.length != 0) return alreadyExisting[0];
+    if (alreadyExisting.length != 0) return alreadyExisting;
     return undefined;
   }
 
