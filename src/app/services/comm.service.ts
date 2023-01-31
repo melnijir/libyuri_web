@@ -11,9 +11,11 @@ export class CommService {
 
   private newNodeSource = new Subject<Class>();
   private newGraphSource = new Subject<GraphicGraph>();
+  private changedGraphSource = new Subject<GraphicGraph>();
 
   newNode$ = this.newNodeSource.asObservable();
   newGraph$ = this.newGraphSource.asObservable();
+  changedGraph$ = this.changedGraphSource.asObservable();
 
   addNewNode(nodeClass: Class) {
     this.newNodeSource.next(nodeClass);
@@ -21,5 +23,9 @@ export class CommService {
 
   addNewGraph(graph: GraphicGraph) {
     this.newGraphSource.next(graph);
+  }
+
+  addChangedGraph(graph: GraphicGraph) {
+    this.changedGraphSource.next(graph);
   }
 }

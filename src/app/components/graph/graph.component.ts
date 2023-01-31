@@ -36,6 +36,7 @@ export class GraphComponent implements AfterViewChecked {
       node.params = nodeClass.params;
       this.graph.nodes.push(node);
       this.graphChanged.emit(this.graph);
+      this.commService.addChangedGraph(this.graph);
     });
     commService.newGraph$.subscribe(graph => {
       // Delete existing nodes in the graph
@@ -80,6 +81,7 @@ export class GraphComponent implements AfterViewChecked {
   saveNodePosition($event: CdkDragEnd, node: GraphicNode) {
     node.graphPosition = $event.source.getFreeDragPosition();
     this.graphChanged.emit(this.graph);
+    this.commService.addChangedGraph(this.graph);
   }
 
   getExistingLink(fromNode: GraphicNode, toNode: GraphicNode, linkName: string): GraphicLink|undefined {
@@ -130,6 +132,7 @@ export class GraphComponent implements AfterViewChecked {
       }
     });
     this.graphChanged.emit(this.graph);
+    this.commService.addChangedGraph(this.graph);
   }
 
   fillNativeElements(fromNode: GraphicNode, toNode: GraphicNode, link: GraphicLink) {
