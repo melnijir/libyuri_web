@@ -24,7 +24,9 @@ export class ClassesListComponent implements OnInit {
         next: (data) => {
           this.classes = data;
         },
-        error: (e) => console.error(e)
+        error: (error) => {
+          console.log("Backend communication error, waiting for connection...");
+        }
       });
   }
 

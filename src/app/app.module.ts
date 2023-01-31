@@ -28,6 +28,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { LogComponent } from './components/log/log.component';
+import { ConnectionNotifierComponent } from './components/connection-notifier/connection-notifier.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { LogComponent } from './components/log/log.component';
     GraphComponent,
     FilterNodesExcludePipe,
     LinkEditorComponent,
-    LogComponent
+    LogComponent,
+    ConnectionNotifierComponent
   ],
   imports: [
     BrowserModule,

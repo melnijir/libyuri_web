@@ -6,6 +6,8 @@ import { CommService } from 'src/app/services/comm.service';
 import { YuriService } from 'src/app/services/yuri.service';
 import { Node } from 'src/app/interfaces/node';
 import { Link } from 'src/app/interfaces/link';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ConnectionNotifierComponent } from '../connection-notifier/connection-notifier.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,7 +19,23 @@ export class DashboardComponent {
   downloadJsonUrl: SafeUrl = "";
   graph?: GraphicGraph;
 
-  constructor(private sanitizer: DomSanitizer, private commService: CommService, private yuriService: YuriService) {}
+  connectionNotifierOpened: boolean = false;
+  connectionNotifierRef?: MatDialogRef<ConnectionNotifierComponent, any>
+
+  constructor(private sanitizer: DomSanitizer, private commService: CommService, private yuriService: YuriService, public connectionNotifier: MatDialog) {
+    yuriService.newError$.subscribe(connError => {
+      // There was a problem with connection
+      if (!this.connectionNotifierOpened) {
+        this.connectionNotifierOpened = true;
+          this.connectionNotifierRef = this.connectionNotifier.open(ConnectionNotifierComponent, {
+          data: connError,
+        });
+      }
+      if (this.connectionNotifierOpened && !connError.isError) {
+        this.connectionNotifierRef?.close();
+      }
+    });
+  }
 
   updateGraph(graph: GraphicGraph) {
     this.graph = graph;

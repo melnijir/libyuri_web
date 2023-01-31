@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, delay, finalize, Observable, retry, retryWhen, Subject, take, throwError } from 'rxjs';
 import { Class } from '../interfaces/class';
 import { Pipe } from '../interfaces/pipe';
 import { Node } from '../interfaces/node';
 import { Link } from '../interfaces/link';
 import { Message } from '../interfaces/message';
 import { Log } from '../interfaces/log';
+import { BackendError } from '../classes/backend-error';
 
 const yuriLocation = 'http://localhost:8888/';
 
@@ -22,29 +23,41 @@ const httpOptions = {
 })
 export class YuriService {
 
-  constructor(private http: HttpClient) { }
+  private newErrorSource = new Subject<BackendError>();
+  newError$ = this.newErrorSource.asObservable();
+
+  constructor(private http: HttpClient) {}
 
   private handleError(error: HttpErrorResponse) {
     if (error.status === 0) {
       // Error occured
-      console.error('An error occurred:', error.error);
+      this.addNewError(true, error.message);
     } else {
       // Error response
-      console.error(`Backend returned code ${error.status}, body: `, error.error);
+      this.addNewError(true, error.message);
     }
     return throwError(() => new Error('Not able to comunicate with backend.'));
   }
 
+  addNewError(isError: boolean, message: string) {
+    let backendError: BackendError = new BackendError(isError, message);
+    this.newErrorSource.next(backendError);
+  }
+  
+  private getStandardRequest<T>(urlPart: string): Observable<T> {
+    return this.http.get<T>(yuriLocation+urlPart).pipe(catchError(this.handleError.bind(this)), retry({delay: 2000}));
+  }
+
   getClasses(): Observable<Class[]> {
-    return this.http.get<Class[]>(yuriLocation+"classes").pipe(catchError(this.handleError));
+    return this.getStandardRequest<Class[]>("classes");
   }
 
   getPipes(): Observable<Pipe[]> {
-    return this.http.get<Pipe[]>(yuriLocation+"pipes").pipe(catchError(this.handleError));
+    return this.getStandardRequest<Pipe[]>("pipes");
   }
 
   getLog(): Observable<Log> {
-    return this.http.get<Log>(yuriLocation+"log").pipe(catchError(this.handleError));
+    return this.getStandardRequest<Log>("log");
   }
 
   addNode(node: Node): Observable<Message> {

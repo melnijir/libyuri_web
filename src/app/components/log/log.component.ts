@@ -22,8 +22,11 @@ export class LogComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.log = data;
+          this.yuriService.addNewError(false, "Seems to be OK again.");
         },
-        error: (e) => console.error(e)
+        error: (error) =>  {
+          console.log("Backend communication error, waiting for connection...");
+        }
       });
   }
 
