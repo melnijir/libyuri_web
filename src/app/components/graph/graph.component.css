@@ -17,3 +17,8 @@
 .node-on-same {
     z-index: 500;
 }
+
+.mat-expansion-panel-header-title {
+    max-width: 9em;
+    overflow: hidden;
+}

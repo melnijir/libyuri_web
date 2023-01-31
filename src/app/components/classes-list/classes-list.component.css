@@ -7,3 +7,8 @@
 .classes-list .mat-mdc-form-field + .mat-mdc-form-field {
     margin-left: 8px;
 }
+
+.mdc-icon-button {
+    position: absolute;
+    right: 12px;
+}
